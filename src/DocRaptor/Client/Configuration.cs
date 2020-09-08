@@ -51,13 +51,13 @@ namespace DocRaptor.Client
             if (status >= 400)
             {
                 return new ApiException(status,
-                    string.Format("Error calling {0}: {1}", methodName, response.Content),
+                    $"Error calling {methodName}: {response.Content}",
                     response.Content);
             }
             if (status == 0)
             {
                 return new ApiException(status,
-                    string.Format("Error calling {0}: {1}", methodName, response.ErrorMessage), response.ErrorMessage);
+                    $"Error calling {methodName}: {response.ErrorMessage}", response.ErrorMessage);
             }
             return null;
         };
@@ -68,7 +68,7 @@ namespace DocRaptor.Client
         /// <value>Configuration.</value>
         public static Configuration Default
         {
-            get { return _globalConfiguration; }
+            get => _globalConfiguration;
             set
             {
                 lock (GlobalConfigSync)
@@ -131,13 +131,13 @@ namespace DocRaptor.Client
             string basePath = "https://docraptor.com") : this()
         {
             if (string.IsNullOrWhiteSpace(basePath))
-                throw new ArgumentException("The provided basePath is invalid.", "basePath");
+                throw new ArgumentException("The provided basePath is invalid.", nameof(basePath));
             if (defaultHeader == null)
-                throw new ArgumentNullException("defaultHeader");
+                throw new ArgumentNullException(nameof(defaultHeader));
             if (apiKey == null)
-                throw new ArgumentNullException("apiKey");
+                throw new ArgumentNullException(nameof(apiKey));
             if (apiKeyPrefix == null)
-                throw new ArgumentNullException("apiKeyPrefix");
+                throw new ArgumentNullException(nameof(apiKeyPrefix));
 
             BasePath = basePath;
 
@@ -215,7 +215,11 @@ namespace DocRaptor.Client
         {
             get
             {
-                if (_apiClient == null) _apiClient = CreateApiClient();
+                if (_apiClient == null)
+                {
+                    _apiClient = CreateApiClient();
+                }
+
                 return _apiClient;
             }
         }
@@ -225,7 +229,7 @@ namespace DocRaptor.Client
         /// Gets or sets the base path for API access.
         /// </summary>
         public virtual string BasePath {
-            get { return _basePath; }
+            get => _basePath;
             set {
                 _basePath = value;
                 // pass-through to ApiClient if it's set.
@@ -246,7 +250,7 @@ namespace DocRaptor.Client
         public virtual int Timeout
         {
 
-            get { return ApiClient.RestClient.Timeout; }
+            get => ApiClient.RestClient.Timeout;
             set { ApiClient.RestClient.Timeout = value; }
         }
 
@@ -275,13 +279,13 @@ namespace DocRaptor.Client
         /// <returns>API key with prefix.</returns>
         public string GetApiKeyWithPrefix(string apiKeyIdentifier)
         {
-            var apiKeyValue = "";
-            ApiKey.TryGetValue (apiKeyIdentifier, out apiKeyValue);
-            var apiKeyPrefix = "";
-            if (ApiKeyPrefix.TryGetValue (apiKeyIdentifier, out apiKeyPrefix))
+            ApiKey.TryGetValue (apiKeyIdentifier, out var apiKeyValue);
+            if (ApiKeyPrefix.TryGetValue(apiKeyIdentifier, out var apiKeyPrefix))
+            {
                 return apiKeyPrefix + " " + apiKeyValue;
-            else
-                return apiKeyValue;
+            }
+
+            return apiKeyValue;
         }
 
         /// <summary>
@@ -357,15 +361,8 @@ namespace DocRaptor.Client
         /// <value>The prefix of the API key.</value>
         public virtual IDictionary<string, string> ApiKeyPrefix
         {
-            get { return _apiKeyPrefix; }
-            set
-            {
-                if (value == null)
-                {
-                    throw new InvalidOperationException("ApiKeyPrefix collection may not be null.");
-                }
-                _apiKeyPrefix = value;
-            }
+            get => _apiKeyPrefix;
+            set => _apiKeyPrefix = value ?? throw new InvalidOperationException("ApiKeyPrefix collection may not be null.");
         }
 
         /// <summary>
@@ -374,15 +371,8 @@ namespace DocRaptor.Client
         /// <value>The API key.</value>
         public virtual IDictionary<string, string> ApiKey
         {
-            get { return _apiKey; }
-            set
-            {
-                if (value == null)
-                {
-                    throw new InvalidOperationException("ApiKey collection may not be null.");
-                }
-                _apiKey = value;
-            }
+            get => _apiKey;
+            set => _apiKey = value ?? throw new InvalidOperationException("ApiKey collection may not be null.");
         }
 
         #endregion Properties
@@ -408,8 +398,7 @@ namespace DocRaptor.Client
         {
             return new ApiClient(BasePath) { Configuration = this };
         }
-
-
+        
         /// <summary>
         /// Returns a string with essential information for debugging.
         /// </summary>

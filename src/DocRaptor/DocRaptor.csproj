@@ -5,6 +5,8 @@
     <Version>0.0.1</Version>
     <Description>Packages a net standard build of docraptor</Description>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <RepositoryUrl>https://github.com/eliotjones-roger/docraptor-csharp</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="RestSharp" Version="106.11.4" />

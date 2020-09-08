@@ -28,157 +28,15 @@ namespace DocRaptor.Model
         /// The type of document being created.
         /// </summary>
         /// <value>The type of document being created.</value>
-        [JsonConverter(typeof(StringEnumConverter))]
-        public enum DocumentTypeEnum
-        {
-
-            /// <summary>
-            /// Enum Pdf for value: pdf
-            /// </summary>
-            [EnumMember(Value = "pdf")]
-            Pdf = 1,
-
-            /// <summary>
-            /// Enum Xls for value: xls
-            /// </summary>
-            [EnumMember(Value = "xls")]
-            Xls = 2,
-
-            /// <summary>
-            /// Enum Xlsx for value: xlsx
-            /// </summary>
-            [EnumMember(Value = "xlsx")]
-            Xlsx = 3
-        }
-
-        /// <summary>
-        /// The type of document being created.
-        /// </summary>
-        /// <value>The type of document being created.</value>
         [DataMember(Name = "document_type", EmitDefaultValue = false)]
-        public DocumentTypeEnum DocumentType { get; set; }
-
-        /// <summary>
-        /// Force strict HTML validation.
-        /// </summary>
-        /// <value>Force strict HTML validation.</value>
-        [JsonConverter(typeof(StringEnumConverter))]
-        public enum StrictEnum
-        {
-
-            /// <summary>
-            /// Enum None for value: none
-            /// </summary>
-            [EnumMember(Value = "none")]
-            None = 1,
-
-            /// <summary>
-            /// Enum Html for value: html
-            /// </summary>
-            [EnumMember(Value = "html")]
-            Html = 2
-        }
-
-        /// <summary>
-        /// Force strict HTML validation.
-        /// </summary>
-        /// <value>Force strict HTML validation.</value>
-        [DataMember(Name = "strict", EmitDefaultValue = false)]
-        public StrictEnum? Strict { get; set; }
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Doc" /> class.
-        /// </summary>
-        [JsonConstructorAttribute]
-        protected Doc() { }
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Doc" /> class.
-        /// </summary>
-        /// <param name="name">A name for identifying your document. (required).</param>
-        /// <param name="documentType">The type of document being created. (required).</param>
-        /// <param name="documentContent">The HTML data to be transformed into a document. You must supply content using document_content or document_url.  (required).</param>
-        /// <param name="documentUrl">The URL to fetch the HTML data to be transformed into a document. You must supply content using document_content or document_url. .</param>
-        /// <param name="test">Enable test mode for this document. Test documents are not charged for but include a watermark. (default to true).</param>
-        /// <param name="pipeline">Specify a specific version of the DocRaptor Pipeline to use.</param>
-        /// <param name="strict">Force strict HTML validation..</param>
-        /// <param name="ignoreResourceErrors">Failed loading of images/javascripts/stylesheets/etc. will not cause the rendering to stop. (default to true).</param>
-        /// <param name="ignoreConsoleMessages">Prevent console.log from stopping document rendering during JavaScript execution. (default to false).</param>
-        /// <param name="tag">A field for storing a small amount of metadata with this document.</param>
-        /// <param name="help">Request support help with this request if it succeeds. (default to false).</param>
-        /// <param name="javascript">Enable DocRaptor JavaScript parsing. PrinceXML JavaScript parsing is also available elsewhere. (default to false).</param>
-        /// <param name="referrer">Set HTTP referrer when generating this document..</param>
-        /// <param name="callbackUrl">A URL that will receive a POST request after successfully completing an asynchronous document. The POST data will include download_url and download_id similar to status API responses. WARNING: this only works on asynchronous documents. .</param>
-        /// <param name="hostedDownloadLimit">The number of times a hosted document can be downloaded.  If no limit is specified, the document will be available for an unlimited number of downloads..</param>
-        /// <param name="hostedExpiresAt">The date and time at which a hosted document will be removed and no longer available. Must be a properly formatted ISO 8601 datetime, like 1981-01-23T08:02:30-05:00..</param>
-        /// <param name="princeOptions">princeOptions.</param>
-        public Doc(string name = default(string), DocumentTypeEnum documentType = default(DocumentTypeEnum), string documentContent = default(string), string documentUrl = default(string), bool? test = true, string pipeline = default(string), StrictEnum? strict = default(StrictEnum?), bool? ignoreResourceErrors = true, bool? ignoreConsoleMessages = false, string tag = default(string), bool? help = false, bool? javascript = false, string referrer = default(string), string callbackUrl = default(string), int? hostedDownloadLimit = default(int?), string hostedExpiresAt = default(string), PrinceOptions princeOptions = default(PrinceOptions))
-        {
-            // to ensure "name" is required (not null)
-
-            Name = name ?? throw new ArgumentNullException(nameof(name), "name is a required property for Doc and cannot be null");
-            DocumentType = documentType;
-            DocumentContent = documentContent ?? throw new ArgumentNullException(nameof(DocumentContent), "documentContent is a required property for Doc and cannot be null");
-            DocumentUrl = documentUrl;
-            // use default value if no "test" provided
-            if (test == null)
-            {
-                Test = true;
-            }
-            else
-            {
-                Test = test;
-            }
-            Pipeline = pipeline;
-            Strict = strict;
-            // use default value if no "ignoreResourceErrors" provided
-            if (ignoreResourceErrors == null)
-            {
-                IgnoreResourceErrors = true;
-            }
-            else
-            {
-                IgnoreResourceErrors = ignoreResourceErrors;
-            }
-            // use default value if no "ignoreConsoleMessages" provided
-            if (ignoreConsoleMessages == null)
-            {
-                IgnoreConsoleMessages = false;
-            }
-            else
-            {
-                IgnoreConsoleMessages = ignoreConsoleMessages;
-            }
-            Tag = tag;
-            // use default value if no "help" provided
-            if (help == null)
-            {
-                Help = false;
-            }
-            else
-            {
-                Help = help;
-            }
-            // use default value if no "javascript" provided
-            if (javascript == null)
-            {
-                Javascript = false;
-            }
-            else
-            {
-                Javascript = javascript;
-            }
-            Referrer = referrer;
-            CallbackUrl = callbackUrl;
-            HostedDownloadLimit = hostedDownloadLimit;
-            HostedExpiresAt = hostedExpiresAt;
-            PrinceOptions = princeOptions;
-        }
-
+        public DocumentTypeEnum DocumentType { get; }
+        
         /// <summary>
         /// A name for identifying your document.
         /// </summary>
         /// <value>A name for identifying your document.</value>
         [DataMember(Name = "name", EmitDefaultValue = false)]
-        public string Name { get; private set; }
+        public string Name { get; }
 
 
         /// <summary>
@@ -186,7 +44,7 @@ namespace DocRaptor.Model
         /// </summary>
         /// <value>The HTML data to be transformed into a document. You must supply content using document_content or document_url. </value>
         [DataMember(Name = "document_content", EmitDefaultValue = false)]
-        public string DocumentContent { get; set; }
+        public string DocumentContent { get; }
 
         /// <summary>
         /// The URL to fetch the HTML data to be transformed into a document. You must supply content using document_content or document_url.
@@ -203,13 +61,12 @@ namespace DocRaptor.Model
         public bool? Test { get; set; }
 
         /// <summary>
-        /// Specify a specific verison of the DocRaptor Pipeline to use.
+        /// Specify a specific version of the DocRaptor Pipeline to use.
         /// </summary>
-        /// <value>Specify a specific verison of the DocRaptor Pipeline to use.</value>
+        /// <value>Specify a specific version of the DocRaptor Pipeline to use.</value>
         [DataMember(Name = "pipeline", EmitDefaultValue = false)]
         public string Pipeline { get; set; }
-
-
+        
         /// <summary>
         /// Failed loading of images/javascripts/stylesheets/etc. will not cause the rendering to stop.
         /// </summary>
@@ -278,6 +135,59 @@ namespace DocRaptor.Model
         /// </summary>
         [DataMember(Name = "prince_options", EmitDefaultValue = false)]
         public PrinceOptions PrinceOptions { get; set; }
+
+        /// <summary>
+        /// Force strict HTML validation.
+        /// </summary>
+        /// <value>Force strict HTML validation.</value>
+        [DataMember(Name = "strict", EmitDefaultValue = false)]
+        public StrictEnum? Strict { get; set; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Doc" /> class.
+        /// </summary>
+        [JsonConstructorAttribute]
+        protected Doc() { }
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Doc" /> class.
+        /// </summary>
+        /// <param name="name">A name for identifying your document. (required).</param>
+        /// <param name="documentType">The type of document being created. (required).</param>
+        /// <param name="documentContent">The HTML data to be transformed into a document. You must supply content using document_content or document_url.  (required).</param>
+        /// <param name="documentUrl">The URL to fetch the HTML data to be transformed into a document. You must supply content using document_content or document_url. .</param>
+        /// <param name="test">Enable test mode for this document. Test documents are not charged for but include a watermark. (default to true).</param>
+        /// <param name="pipeline">Specify a specific version of the DocRaptor Pipeline to use.</param>
+        /// <param name="strict">Force strict HTML validation..</param>
+        /// <param name="ignoreResourceErrors">Failed loading of images/javascripts/stylesheets/etc. will not cause the rendering to stop. (default to true).</param>
+        /// <param name="ignoreConsoleMessages">Prevent console.log from stopping document rendering during JavaScript execution. (default to false).</param>
+        /// <param name="tag">A field for storing a small amount of metadata with this document.</param>
+        /// <param name="help">Request support help with this request if it succeeds. (default to false).</param>
+        /// <param name="javascript">Enable DocRaptor JavaScript parsing. PrinceXML JavaScript parsing is also available elsewhere. (default to false).</param>
+        /// <param name="referrer">Set HTTP referrer when generating this document..</param>
+        /// <param name="callbackUrl">A URL that will receive a POST request after successfully completing an asynchronous document. The POST data will include download_url and download_id similar to status API responses. WARNING: this only works on asynchronous documents. .</param>
+        /// <param name="hostedDownloadLimit">The number of times a hosted document can be downloaded.  If no limit is specified, the document will be available for an unlimited number of downloads..</param>
+        /// <param name="hostedExpiresAt">The date and time at which a hosted document will be removed and no longer available. Must be a properly formatted ISO 8601 datetime, like 1981-01-23T08:02:30-05:00..</param>
+        /// <param name="princeOptions">princeOptions.</param>
+        public Doc(string name, DocumentTypeEnum documentType, string documentContent, string documentUrl = default(string), bool? test = true, string pipeline = default(string), StrictEnum? strict = default(StrictEnum?), bool? ignoreResourceErrors = true, bool? ignoreConsoleMessages = false, string tag = default(string), bool? help = false, bool? javascript = false, string referrer = default(string), string callbackUrl = default(string), int? hostedDownloadLimit = default(int?), string hostedExpiresAt = default(string), PrinceOptions princeOptions = default(PrinceOptions))
+        {
+            Name = name ?? throw new ArgumentNullException(nameof(name), "name is a required property for Doc and cannot be null");
+            DocumentType = documentType;
+            DocumentContent = documentContent ?? throw new ArgumentNullException(nameof(DocumentContent), "documentContent is a required property for Doc and cannot be null");
+            DocumentUrl = documentUrl;
+            Test = test ?? true;
+            Pipeline = pipeline;
+            Strict = strict;
+            IgnoreResourceErrors = ignoreResourceErrors ?? true;
+            IgnoreConsoleMessages = ignoreConsoleMessages ?? false;
+            Tag = tag;
+            Help = help ?? false;
+            Javascript = javascript ?? false;
+            Referrer = referrer;
+            CallbackUrl = callbackUrl;
+            HostedDownloadLimit = hostedDownloadLimit;
+            HostedExpiresAt = hostedExpiresAt;
+            PrinceOptions = princeOptions;
+        }
 
         /// <summary>
         /// Returns the string presentation of the object
@@ -432,7 +342,7 @@ namespace DocRaptor.Model
         {
             unchecked // Overflow is fine, just wrap
             {
-                int hashCode = 41;
+                var hashCode = 41;
                 // ReSharper disable NonReadonlyMemberInGetHashCode
                 if (Name != null)
                 {
@@ -485,6 +395,26 @@ namespace DocRaptor.Model
         {
             yield break;
         }
-    }
+        
+        /// <summary>
+        /// Force strict HTML validation.
+        /// </summary>
+        /// <value>Force strict HTML validation.</value>
+        [JsonConverter(typeof(StringEnumConverter))]
+        public enum StrictEnum
+        {
 
+            /// <summary>
+            /// Enum None for value: none
+            /// </summary>
+            [EnumMember(Value = "none")]
+            None = 1,
+
+            /// <summary>
+            /// Enum Html for value: html
+            /// </summary>
+            [EnumMember(Value = "html")]
+            Html = 2
+        }
+    }
 }
