@@ -1,6 +1,0 @@
-{
-  "packageName": "DocRaptor",
-  "packageVersion": "2.0.0",
-  "targetFramework": "v4.5",
-  "modelPropertyNaming": "PascalCase"
-}

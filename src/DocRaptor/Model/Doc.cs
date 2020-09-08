@@ -9,18 +9,12 @@
  */
 
 using System;
-using System.Linq;
-using System.IO;
 using System.Text;
-using System.Text.RegularExpressions;
-using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Runtime.Serialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System.ComponentModel.DataAnnotations;
-using SwaggerDateConverter = DocRaptor.Client.SwaggerDateConverter;
 
 namespace DocRaptor.Model
 {
@@ -28,7 +22,7 @@ namespace DocRaptor.Model
     /// Doc
     /// </summary>
     [DataContract]
-    public partial class Doc :  IEquatable<Doc>, IValidatableObject
+    public class Doc : IEquatable<Doc>, IValidatableObject
     {
         /// <summary>
         /// The type of document being created.
@@ -61,8 +55,9 @@ namespace DocRaptor.Model
         /// The type of document being created.
         /// </summary>
         /// <value>The type of document being created.</value>
-        [DataMember(Name="document_type", EmitDefaultValue=false)]
+        [DataMember(Name = "document_type", EmitDefaultValue = false)]
         public DocumentTypeEnum DocumentType { get; set; }
+
         /// <summary>
         /// Force strict HTML validation.
         /// </summary>
@@ -88,7 +83,7 @@ namespace DocRaptor.Model
         /// Force strict HTML validation.
         /// </summary>
         /// <value>Force strict HTML validation.</value>
-        [DataMember(Name="strict", EmitDefaultValue=false)]
+        [DataMember(Name = "strict", EmitDefaultValue = false)]
         public StrictEnum? Strict { get; set; }
         /// <summary>
         /// Initializes a new instance of the <see cref="Doc" /> class.
@@ -103,11 +98,11 @@ namespace DocRaptor.Model
         /// <param name="documentContent">The HTML data to be transformed into a document. You must supply content using document_content or document_url.  (required).</param>
         /// <param name="documentUrl">The URL to fetch the HTML data to be transformed into a document. You must supply content using document_content or document_url. .</param>
         /// <param name="test">Enable test mode for this document. Test documents are not charged for but include a watermark. (default to true).</param>
-        /// <param name="pipeline">Specify a specific verison of the DocRaptor Pipeline to use..</param>
+        /// <param name="pipeline">Specify a specific version of the DocRaptor Pipeline to use.</param>
         /// <param name="strict">Force strict HTML validation..</param>
         /// <param name="ignoreResourceErrors">Failed loading of images/javascripts/stylesheets/etc. will not cause the rendering to stop. (default to true).</param>
         /// <param name="ignoreConsoleMessages">Prevent console.log from stopping document rendering during JavaScript execution. (default to false).</param>
-        /// <param name="tag">A field for storing a small amount of metadata with this document..</param>
+        /// <param name="tag">A field for storing a small amount of metadata with this document.</param>
         /// <param name="help">Request support help with this request if it succeeds. (default to false).</param>
         /// <param name="javascript">Enable DocRaptor JavaScript parsing. PrinceXML JavaScript parsing is also available elsewhere. (default to false).</param>
         /// <param name="referrer">Set HTTP referrer when generating this document..</param>
@@ -118,122 +113,100 @@ namespace DocRaptor.Model
         public Doc(string name = default(string), DocumentTypeEnum documentType = default(DocumentTypeEnum), string documentContent = default(string), string documentUrl = default(string), bool? test = true, string pipeline = default(string), StrictEnum? strict = default(StrictEnum?), bool? ignoreResourceErrors = true, bool? ignoreConsoleMessages = false, string tag = default(string), bool? help = false, bool? javascript = false, string referrer = default(string), string callbackUrl = default(string), int? hostedDownloadLimit = default(int?), string hostedExpiresAt = default(string), PrinceOptions princeOptions = default(PrinceOptions))
         {
             // to ensure "name" is required (not null)
-            if (name == null)
-            {
-                throw new InvalidDataException("name is a required property for Doc and cannot be null");
-            }
-            else
-            {
-                this.Name = name;
-            }
-            // to ensure "documentType" is required (not null)
-            if (documentType == null)
-            {
-                throw new InvalidDataException("documentType is a required property for Doc and cannot be null");
-            }
-            else
-            {
-                this.DocumentType = documentType;
-            }
-            // to ensure "documentContent" is required (not null)
-            if (documentContent == null)
-            {
-                throw new InvalidDataException("documentContent is a required property for Doc and cannot be null");
-            }
-            else
-            {
-                this.DocumentContent = documentContent;
-            }
-            this.DocumentUrl = documentUrl;
+
+            Name = name ?? throw new ArgumentNullException(nameof(name), "name is a required property for Doc and cannot be null");
+            DocumentType = documentType;
+            DocumentContent = documentContent ?? throw new ArgumentNullException(nameof(DocumentContent), "documentContent is a required property for Doc and cannot be null");
+            DocumentUrl = documentUrl;
             // use default value if no "test" provided
             if (test == null)
             {
-                this.Test = true;
+                Test = true;
             }
             else
             {
-                this.Test = test;
+                Test = test;
             }
-            this.Pipeline = pipeline;
-            this.Strict = strict;
+            Pipeline = pipeline;
+            Strict = strict;
             // use default value if no "ignoreResourceErrors" provided
             if (ignoreResourceErrors == null)
             {
-                this.IgnoreResourceErrors = true;
+                IgnoreResourceErrors = true;
             }
             else
             {
-                this.IgnoreResourceErrors = ignoreResourceErrors;
+                IgnoreResourceErrors = ignoreResourceErrors;
             }
             // use default value if no "ignoreConsoleMessages" provided
             if (ignoreConsoleMessages == null)
             {
-                this.IgnoreConsoleMessages = false;
+                IgnoreConsoleMessages = false;
             }
             else
             {
-                this.IgnoreConsoleMessages = ignoreConsoleMessages;
+                IgnoreConsoleMessages = ignoreConsoleMessages;
             }
-            this.Tag = tag;
+            Tag = tag;
             // use default value if no "help" provided
             if (help == null)
             {
-                this.Help = false;
+                Help = false;
             }
             else
             {
-                this.Help = help;
+                Help = help;
             }
             // use default value if no "javascript" provided
             if (javascript == null)
             {
-                this.Javascript = false;
+                Javascript = false;
             }
             else
             {
-                this.Javascript = javascript;
+                Javascript = javascript;
             }
-            this.Referrer = referrer;
-            this.CallbackUrl = callbackUrl;
-            this.HostedDownloadLimit = hostedDownloadLimit;
-            this.HostedExpiresAt = hostedExpiresAt;
-            this.PrinceOptions = princeOptions;
+            Referrer = referrer;
+            CallbackUrl = callbackUrl;
+            HostedDownloadLimit = hostedDownloadLimit;
+            HostedExpiresAt = hostedExpiresAt;
+            PrinceOptions = princeOptions;
         }
 
         /// <summary>
         /// A name for identifying your document.
         /// </summary>
         /// <value>A name for identifying your document.</value>
-        [DataMember(Name="name", EmitDefaultValue=false)]
-        public string Name { get; set; }
+        [DataMember(Name = "name", EmitDefaultValue = false)]
+        public string Name { get; private set; }
 
 
         /// <summary>
         /// The HTML data to be transformed into a document. You must supply content using document_content or document_url.
         /// </summary>
         /// <value>The HTML data to be transformed into a document. You must supply content using document_content or document_url. </value>
-        [DataMember(Name="document_content", EmitDefaultValue=false)]
+        [DataMember(Name = "document_content", EmitDefaultValue = false)]
         public string DocumentContent { get; set; }
 
         /// <summary>
         /// The URL to fetch the HTML data to be transformed into a document. You must supply content using document_content or document_url.
         /// </summary>
         /// <value>The URL to fetch the HTML data to be transformed into a document. You must supply content using document_content or document_url. </value>
-        [DataMember(Name="document_url", EmitDefaultValue=false)]
+        [DataMember(Name = "document_url", EmitDefaultValue = false)]
         public string DocumentUrl { get; set; }
 
         /// <summary>
         /// Enable test mode for this document. Test documents are not charged for but include a watermark.
         /// </summary>
         /// <value>Enable test mode for this document. Test documents are not charged for but include a watermark.</value>
-        [DataMember(Name="test", EmitDefaultValue=false)]
+        [DataMember(Name = "test", EmitDefaultValue = false)]
         public bool? Test { get; set; }
 
         /// <summary>
         /// Specify a specific verison of the DocRaptor Pipeline to use.
         /// </summary>
         /// <value>Specify a specific verison of the DocRaptor Pipeline to use.</value>
-        [DataMember(Name="pipeline", EmitDefaultValue=false)]
+        [DataMember(Name = "pipeline", EmitDefaultValue = false)]
         public string Pipeline { get; set; }
 
 
@@ -241,69 +214,69 @@ namespace DocRaptor.Model
         /// Failed loading of images/javascripts/stylesheets/etc. will not cause the rendering to stop.
         /// </summary>
         /// <value>Failed loading of images/javascripts/stylesheets/etc. will not cause the rendering to stop.</value>
-        [DataMember(Name="ignore_resource_errors", EmitDefaultValue=false)]
+        [DataMember(Name = "ignore_resource_errors", EmitDefaultValue = false)]
         public bool? IgnoreResourceErrors { get; set; }
 
         /// <summary>
         /// Prevent console.log from stopping document rendering during JavaScript execution.
         /// </summary>
         /// <value>Prevent console.log from stopping document rendering during JavaScript execution.</value>
-        [DataMember(Name="ignore_console_messages", EmitDefaultValue=false)]
+        [DataMember(Name = "ignore_console_messages", EmitDefaultValue = false)]
         public bool? IgnoreConsoleMessages { get; set; }
 
         /// <summary>
         /// A field for storing a small amount of metadata with this document.
         /// </summary>
         /// <value>A field for storing a small amount of metadata with this document.</value>
-        [DataMember(Name="tag", EmitDefaultValue=false)]
+        [DataMember(Name = "tag", EmitDefaultValue = false)]
         public string Tag { get; set; }
 
         /// <summary>
         /// Request support help with this request if it succeeds.
         /// </summary>
         /// <value>Request support help with this request if it succeeds.</value>
-        [DataMember(Name="help", EmitDefaultValue=false)]
+        [DataMember(Name = "help", EmitDefaultValue = false)]
         public bool? Help { get; set; }
 
         /// <summary>
         /// Enable DocRaptor JavaScript parsing. PrinceXML JavaScript parsing is also available elsewhere.
         /// </summary>
         /// <value>Enable DocRaptor JavaScript parsing. PrinceXML JavaScript parsing is also available elsewhere.</value>
-        [DataMember(Name="javascript", EmitDefaultValue=false)]
+        [DataMember(Name = "javascript", EmitDefaultValue = false)]
         public bool? Javascript { get; set; }
 
         /// <summary>
         /// Set HTTP referrer when generating this document.
         /// </summary>
         /// <value>Set HTTP referrer when generating this document.</value>
-        [DataMember(Name="referrer", EmitDefaultValue=false)]
+        [DataMember(Name = "referrer", EmitDefaultValue = false)]
         public string Referrer { get; set; }
 
         /// <summary>
         /// A URL that will receive a POST request after successfully completing an asynchronous document. The POST data will include download_url and download_id similar to status API responses. WARNING: this only works on asynchronous documents.
         /// </summary>
         /// <value>A URL that will receive a POST request after successfully completing an asynchronous document. The POST data will include download_url and download_id similar to status API responses. WARNING: this only works on asynchronous documents. </value>
-        [DataMember(Name="callback_url", EmitDefaultValue=false)]
+        [DataMember(Name = "callback_url", EmitDefaultValue = false)]
         public string CallbackUrl { get; set; }
 
         /// <summary>
         /// The number of times a hosted document can be downloaded.  If no limit is specified, the document will be available for an unlimited number of downloads.
         /// </summary>
         /// <value>The number of times a hosted document can be downloaded.  If no limit is specified, the document will be available for an unlimited number of downloads.</value>
-        [DataMember(Name="hosted_download_limit", EmitDefaultValue=false)]
+        [DataMember(Name = "hosted_download_limit", EmitDefaultValue = false)]
         public int? HostedDownloadLimit { get; set; }
 
         /// <summary>
         /// The date and time at which a hosted document will be removed and no longer available. Must be a properly formatted ISO 8601 datetime, like 1981-01-23T08:02:30-05:00.
         /// </summary>
         /// <value>The date and time at which a hosted document will be removed and no longer available. Must be a properly formatted ISO 8601 datetime, like 1981-01-23T08:02:30-05:00.</value>
-        [DataMember(Name="hosted_expires_at", EmitDefaultValue=false)]
+        [DataMember(Name = "hosted_expires_at", EmitDefaultValue = false)]
         public string HostedExpiresAt { get; set; }
 
         /// <summary>
         /// Gets or Sets PrinceOptions
         /// </summary>
-        [DataMember(Name="prince_options", EmitDefaultValue=false)]
+        [DataMember(Name = "prince_options", EmitDefaultValue = false)]
         public PrinceOptions PrinceOptions { get; set; }
 
         /// <summary>
@@ -351,7 +324,7 @@ namespace DocRaptor.Model
         /// <returns>Boolean</returns>
         public override bool Equals(object input)
         {
-            return this.Equals(input as Doc);
+            return Equals(input as Doc);
         }
 
         /// <summary>
@@ -366,89 +339,88 @@ namespace DocRaptor.Model
 
             return
                 (
-                    this.Name == input.Name ||
-                    (this.Name != null &&
-                    this.Name.Equals(input.Name))
+                    Name == input.Name ||
+                    (Name != null &&
+                    Name.Equals(input.Name))
                 ) &&
                 (
-                    this.DocumentType == input.DocumentType ||
-                    (this.DocumentType != null &&
-                    this.DocumentType.Equals(input.DocumentType))
+                    DocumentType == input.DocumentType ||
+                    (DocumentType.Equals(input.DocumentType))
                 ) &&
                 (
-                    this.DocumentContent == input.DocumentContent ||
-                    (this.DocumentContent != null &&
-                    this.DocumentContent.Equals(input.DocumentContent))
+                    DocumentContent == input.DocumentContent ||
+                    (DocumentContent != null &&
+                    DocumentContent.Equals(input.DocumentContent))
                 ) &&
                 (
-                    this.DocumentUrl == input.DocumentUrl ||
-                    (this.DocumentUrl != null &&
-                    this.DocumentUrl.Equals(input.DocumentUrl))
+                    DocumentUrl == input.DocumentUrl ||
+                    (DocumentUrl != null &&
+                    DocumentUrl.Equals(input.DocumentUrl))
                 ) &&
                 (
-                    this.Test == input.Test ||
-                    (this.Test != null &&
-                    this.Test.Equals(input.Test))
+                    Test == input.Test ||
+                    (Test != null &&
+                    Test.Equals(input.Test))
                 ) &&
                 (
-                    this.Pipeline == input.Pipeline ||
-                    (this.Pipeline != null &&
-                    this.Pipeline.Equals(input.Pipeline))
+                    Pipeline == input.Pipeline ||
+                    (Pipeline != null &&
+                    Pipeline.Equals(input.Pipeline))
                 ) &&
                 (
-                    this.Strict == input.Strict ||
-                    (this.Strict != null &&
-                    this.Strict.Equals(input.Strict))
+                    Strict == input.Strict ||
+                    (Strict != null &&
+                    Strict.Equals(input.Strict))
                 ) &&
                 (
-                    this.IgnoreResourceErrors == input.IgnoreResourceErrors ||
-                    (this.IgnoreResourceErrors != null &&
-                    this.IgnoreResourceErrors.Equals(input.IgnoreResourceErrors))
+                    IgnoreResourceErrors == input.IgnoreResourceErrors ||
+                    (IgnoreResourceErrors != null &&
+                    IgnoreResourceErrors.Equals(input.IgnoreResourceErrors))
                 ) &&
                 (
-                    this.IgnoreConsoleMessages == input.IgnoreConsoleMessages ||
-                    (this.IgnoreConsoleMessages != null &&
-                    this.IgnoreConsoleMessages.Equals(input.IgnoreConsoleMessages))
+                    IgnoreConsoleMessages == input.IgnoreConsoleMessages ||
+                    (IgnoreConsoleMessages != null &&
+                    IgnoreConsoleMessages.Equals(input.IgnoreConsoleMessages))
                 ) &&
                 (
-                    this.Tag == input.Tag ||
-                    (this.Tag != null &&
-                    this.Tag.Equals(input.Tag))
+                    Tag == input.Tag ||
+                    (Tag != null &&
+                    Tag.Equals(input.Tag))
                 ) &&
                 (
-                    this.Help == input.Help ||
-                    (this.Help != null &&
-                    this.Help.Equals(input.Help))
+                    Help == input.Help ||
+                    (Help != null &&
+                    Help.Equals(input.Help))
                 ) &&
                 (
-                    this.Javascript == input.Javascript ||
-                    (this.Javascript != null &&
-                    this.Javascript.Equals(input.Javascript))
+                    Javascript == input.Javascript ||
+                    (Javascript != null &&
+                    Javascript.Equals(input.Javascript))
                 ) &&
                 (
-                    this.Referrer == input.Referrer ||
-                    (this.Referrer != null &&
-                    this.Referrer.Equals(input.Referrer))
+                    Referrer == input.Referrer ||
+                    (Referrer != null &&
+                    Referrer.Equals(input.Referrer))
                 ) &&
                 (
-                    this.CallbackUrl == input.CallbackUrl ||
-                    (this.CallbackUrl != null &&
-                    this.CallbackUrl.Equals(input.CallbackUrl))
+                    CallbackUrl == input.CallbackUrl ||
+                    (CallbackUrl != null &&
+                    CallbackUrl.Equals(input.CallbackUrl))
                 ) &&
                 (
-                    this.HostedDownloadLimit == input.HostedDownloadLimit ||
-                    (this.HostedDownloadLimit != null &&
-                    this.HostedDownloadLimit.Equals(input.HostedDownloadLimit))
+                    HostedDownloadLimit == input.HostedDownloadLimit ||
+                    (HostedDownloadLimit != null &&
+                    HostedDownloadLimit.Equals(input.HostedDownloadLimit))
                 ) &&
                 (
-                    this.HostedExpiresAt == input.HostedExpiresAt ||
-                    (this.HostedExpiresAt != null &&
-                    this.HostedExpiresAt.Equals(input.HostedExpiresAt))
+                    HostedExpiresAt == input.HostedExpiresAt ||
+                    (HostedExpiresAt != null &&
+                    HostedExpiresAt.Equals(input.HostedExpiresAt))
                 ) &&
                 (
-                    this.PrinceOptions == input.PrinceOptions ||
-                    (this.PrinceOptions != null &&
-                    this.PrinceOptions.Equals(input.PrinceOptions))
+                    ReferenceEquals(PrinceOptions, input.PrinceOptions) ||
+                    (PrinceOptions != null &&
+                    PrinceOptions.Equals(input.PrinceOptions))
                 );
         }
 
@@ -461,40 +433,45 @@ namespace DocRaptor.Model
             unchecked // Overflow is fine, just wrap
             {
                 int hashCode = 41;
-                if (this.Name != null)
-                    hashCode = hashCode * 59 + this.Name.GetHashCode();
-                if (this.DocumentType != null)
-                    hashCode = hashCode * 59 + this.DocumentType.GetHashCode();
-                if (this.DocumentContent != null)
-                    hashCode = hashCode * 59 + this.DocumentContent.GetHashCode();
-                if (this.DocumentUrl != null)
-                    hashCode = hashCode * 59 + this.DocumentUrl.GetHashCode();
-                if (this.Test != null)
-                    hashCode = hashCode * 59 + this.Test.GetHashCode();
-                if (this.Pipeline != null)
-                    hashCode = hashCode * 59 + this.Pipeline.GetHashCode();
-                if (this.Strict != null)
-                    hashCode = hashCode * 59 + this.Strict.GetHashCode();
-                if (this.IgnoreResourceErrors != null)
-                    hashCode = hashCode * 59 + this.IgnoreResourceErrors.GetHashCode();
-                if (this.IgnoreConsoleMessages != null)
-                    hashCode = hashCode * 59 + this.IgnoreConsoleMessages.GetHashCode();
-                if (this.Tag != null)
-                    hashCode = hashCode * 59 + this.Tag.GetHashCode();
-                if (this.Help != null)
-                    hashCode = hashCode * 59 + this.Help.GetHashCode();
-                if (this.Javascript != null)
-                    hashCode = hashCode * 59 + this.Javascript.GetHashCode();
-                if (this.Referrer != null)
-                    hashCode = hashCode * 59 + this.Referrer.GetHashCode();
-                if (this.CallbackUrl != null)
-                    hashCode = hashCode * 59 + this.CallbackUrl.GetHashCode();
-                if (this.HostedDownloadLimit != null)
-                    hashCode = hashCode * 59 + this.HostedDownloadLimit.GetHashCode();
-                if (this.HostedExpiresAt != null)
-                    hashCode = hashCode * 59 + this.HostedExpiresAt.GetHashCode();
-                if (this.PrinceOptions != null)
-                    hashCode = hashCode * 59 + this.PrinceOptions.GetHashCode();
+                // ReSharper disable NonReadonlyMemberInGetHashCode
+                if (Name != null)
+                {
+                    hashCode = hashCode * 59 + Name.GetHashCode();
+                }
+                hashCode = hashCode * 59 + DocumentType.GetHashCode();
+                if (DocumentContent != null)
+                {
+                    hashCode = hashCode * 59 + DocumentContent.GetHashCode();
+                }
+                if (DocumentUrl != null)
+                    hashCode = hashCode * 59 + DocumentUrl.GetHashCode();
+                if (Test != null)
+                    hashCode = hashCode * 59 + Test.GetHashCode();
+                if (Pipeline != null)
+                    hashCode = hashCode * 59 + Pipeline.GetHashCode();
+                if (Strict != null)
+                    hashCode = hashCode * 59 + Strict.GetHashCode();
+                if (IgnoreResourceErrors != null)
+                    hashCode = hashCode * 59 + IgnoreResourceErrors.GetHashCode();
+                if (IgnoreConsoleMessages != null)
+                    hashCode = hashCode * 59 + IgnoreConsoleMessages.GetHashCode();
+                if (Tag != null)
+                    hashCode = hashCode * 59 + Tag.GetHashCode();
+                if (Help != null)
+                    hashCode = hashCode * 59 + Help.GetHashCode();
+                if (Javascript != null)
+                    hashCode = hashCode * 59 + Javascript.GetHashCode();
+                if (Referrer != null)
+                    hashCode = hashCode * 59 + Referrer.GetHashCode();
+                if (CallbackUrl != null)
+                    hashCode = hashCode * 59 + CallbackUrl.GetHashCode();
+                if (HostedDownloadLimit != null)
+                    hashCode = hashCode * 59 + HostedDownloadLimit.GetHashCode();
+                if (HostedExpiresAt != null)
+                    hashCode = hashCode * 59 + HostedExpiresAt.GetHashCode();
+                if (PrinceOptions != null)
+                    hashCode = hashCode * 59 + PrinceOptions.GetHashCode();
+                // ReSharper restore NonReadonlyMemberInGetHashCode
                 return hashCode;
             }
         }
@@ -504,7 +481,7 @@ namespace DocRaptor.Model
         /// </summary>
         /// <param name="validationContext">Validation context</param>
         /// <returns>Validation Result</returns>
-        IEnumerable<System.ComponentModel.DataAnnotations.ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
+        IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
         {
             yield break;
         }

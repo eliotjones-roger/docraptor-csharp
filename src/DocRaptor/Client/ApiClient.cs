@@ -11,13 +11,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Text.RegularExpressions;
 using System.IO;
-using System.Web;
 using System.Linq;
-using System.Net;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using Newtonsoft.Json;
 using RestSharp;
 
@@ -28,7 +27,7 @@ namespace DocRaptor.Client
     /// </summary>
     public partial class ApiClient
     {
-        private JsonSerializerSettings serializerSettings = new JsonSerializerSettings
+        private static readonly JsonSerializerSettings SerializerSettings = new JsonSerializerSettings
         {
             ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor
         };
@@ -52,7 +51,7 @@ namespace DocRaptor.Client
         /// </summary>
         public ApiClient()
         {
-            Configuration = DocRaptor.Client.Configuration.Default;
+            Configuration = Client.Configuration.Default;
             RestClient = new RestClient("https://docraptor.com");
         }
 
@@ -63,7 +62,7 @@ namespace DocRaptor.Client
         /// <param name="config">An instance of Configuration.</param>
         public ApiClient(Configuration config)
         {
-            Configuration = config ?? DocRaptor.Client.Configuration.Default;
+            Configuration = config ?? Client.Configuration.Default;
 
             RestClient = new RestClient(Configuration.BasePath);
         }
@@ -73,9 +72,9 @@ namespace DocRaptor.Client
         /// with default configuration.
         /// </summary>
         /// <param name="basePath">The base path.</param>
-        public ApiClient(String basePath = "https://docraptor.com")
+        public ApiClient(string basePath = "https://docraptor.com")
         {
-           if (String.IsNullOrEmpty(basePath))
+           if (string.IsNullOrEmpty(basePath))
                 throw new ArgumentException("basePath cannot be empty");
 
             RestClient = new RestClient(basePath);
@@ -108,33 +107,41 @@ namespace DocRaptor.Client
 
         // Creates and sets up a RestRequest prior to a call.
         private RestRequest PrepareRequest(
-            String path, RestSharp.Method method, List<KeyValuePair<String, String>> queryParams, Object postBody,
-            Dictionary<String, String> headerParams, Dictionary<String, String> formParams,
-            Dictionary<String, FileParameter> fileParams, Dictionary<String, String> pathParams,
-            String contentType)
+            string path, Method method, List<KeyValuePair<string, string>> queryParams, object postBody,
+            Dictionary<string, string> headerParams, Dictionary<string, string> formParams,
+            Dictionary<string, FileParameter> fileParams, Dictionary<string, string> pathParams,
+            string contentType)
         {
             var request = new RestRequest(path, method);
 
             // add path parameter, if any
-            foreach(var param in pathParams)
+            foreach (var param in pathParams)
+            {
                 request.AddParameter(param.Key, param.Value, ParameterType.UrlSegment);
+            }
 
             // add header parameter, if any
-            foreach(var param in headerParams)
+            foreach (var param in headerParams)
+            {
                 request.AddHeader(param.Key, param.Value);
+            }
 
             // add query parameter, if any
-            foreach(var param in queryParams)
+            foreach (var param in queryParams)
+            {
                 request.AddQueryParameter(param.Key, param.Value);
+            }
 
             // add form parameter, if any
-            foreach(var param in formParams)
+            foreach (var param in formParams)
+            {
                 request.AddParameter(param.Key, param.Value);
+            }
 
             // add file parameter, if any
             foreach(var param in fileParams)
             {
-                request.AddFile(param.Value.Name, param.Value.Writer, param.Value.FileName, param.Value.ContentType);
+                request.AddFile(param.Value.Name, param.Value.Writer, param.Value.FileName, param.Value.ContentLength, param.Value.ContentType);
             }
 
             if (postBody != null) // http body (model or byte[]) parameter
@@ -158,11 +165,11 @@ namespace DocRaptor.Client
         /// <param name="pathParams">Path parameters.</param>
         /// <param name="contentType">Content Type of the request</param>
         /// <returns>Object</returns>
-        public Object CallApi(
-            String path, RestSharp.Method method, List<KeyValuePair<String, String>> queryParams, Object postBody,
-            Dictionary<String, String> headerParams, Dictionary<String, String> formParams,
-            Dictionary<String, FileParameter> fileParams, Dictionary<String, String> pathParams,
-            String contentType)
+        public object CallApi(
+            string path, Method method, List<KeyValuePair<string, string>> queryParams, object postBody,
+            Dictionary<string, string> headerParams, Dictionary<string, string> formParams,
+            Dictionary<string, FileParameter> fileParams, Dictionary<string, string> pathParams,
+            string contentType)
         {
             var request = PrepareRequest(
                 path, method, queryParams, postBody, headerParams, formParams, fileParams,
@@ -178,58 +185,26 @@ namespace DocRaptor.Client
             var response = RestClient.Execute(request);
             InterceptResponse(request, response);
 
-            return (Object) response;
+            return (object) response;
         }
         /// <summary>
         /// Makes the asynchronous HTTP request.
         /// </summary>
-        /// <param name="path">URL path.</param>
-        /// <param name="method">HTTP method.</param>
-        /// <param name="queryParams">Query parameters.</param>
-        /// <param name="postBody">HTTP body (POST request).</param>
-        /// <param name="headerParams">Header parameters.</param>
-        /// <param name="formParams">Form parameters.</param>
-        /// <param name="fileParams">File parameters.</param>
-        /// <param name="pathParams">Path parameters.</param>
-        /// <param name="contentType">Content type.</param>
-        /// <returns>The Task instance.</returns>
-        public async System.Threading.Tasks.Task<Object> CallApiAsync(
-            String path, RestSharp.Method method, List<KeyValuePair<String, String>> queryParams, Object postBody,
-            Dictionary<String, String> headerParams, Dictionary<String, String> formParams,
-            Dictionary<String, FileParameter> fileParams, Dictionary<String, String> pathParams,
-            String contentType)
+        public async Task<object> CallApiAsync(
+            string path, Method method, List<KeyValuePair<string, string>> queryParams, object postBody,
+            Dictionary<string, string> headerParams, Dictionary<string, string> formParams,
+            Dictionary<string, FileParameter> fileParams, Dictionary<string, string> pathParams,
+            string contentType,
+            CancellationToken cancellationToken = default)
         {
             var request = PrepareRequest(
                 path, method, queryParams, postBody, headerParams, formParams, fileParams,
                 pathParams, contentType);
+
             InterceptRequest(request);
-            var response = await RestClient.ExecuteTaskAsync(request);
+            var response = await RestClient.ExecuteAsync(request, cancellationToken);
             InterceptResponse(request, response);
-            return (Object)response;
-        }
-
-        /// <summary>
-        /// Escape string (url-encoded).
-        /// </summary>
-        /// <param name="str">String to be escaped.</param>
-        /// <returns>Escaped string.</returns>
-        public string EscapeString(string str)
-        {
-            return UrlEncode(str);
-        }
-
-        /// <summary>
-        /// Create FileParameter based on Stream.
-        /// </summary>
-        /// <param name="name">Parameter name.</param>
-        /// <param name="stream">Input stream.</param>
-        /// <returns>FileParameter.</returns>
-        public FileParameter ParameterToFile(string name, Stream stream)
-        {
-            if (stream is FileStream)
-                return FileParameter.Create(name, ReadAsBytes(stream), Path.GetFileName(((FileStream)stream).Name));
-            else
-                return FileParameter.Create(name, ReadAsBytes(stream), "no_file_name_provided");
+            return response;
         }
 
         /// <summary>
@@ -287,7 +262,7 @@ namespace DocRaptor.Client
             {
                 if (headers != null)
                 {
-                    var filePath = String.IsNullOrEmpty(Configuration.TempFolderPath)
+                    var filePath = string.IsNullOrEmpty(Configuration.TempFolderPath)
                         ? Path.GetTempPath()
                         : Configuration.TempFolderPath;
                     var regex = new Regex(@"Content-Disposition=.*filename=['""]?([^'""\s]+)['""]?$");
@@ -311,7 +286,7 @@ namespace DocRaptor.Client
                 return DateTime.Parse(response.Content,  null, System.Globalization.DateTimeStyles.RoundtripKind);
             }
 
-            if (type == typeof(String) || type.Name.StartsWith("System.Nullable")) // return primitive type
+            if (type == typeof(string) || type.Name.StartsWith("System.Nullable")) // return primitive type
             {
                 return ConvertType(response.Content, type);
             }
@@ -319,7 +294,7 @@ namespace DocRaptor.Client
             // at this point, it must be a model (json)
             try
             {
-                return JsonConvert.DeserializeObject(response.Content, type, serializerSettings);
+                return JsonConvert.DeserializeObject(response.Content, type, SerializerSettings);
             }
             catch (Exception e)
             {
@@ -332,7 +307,7 @@ namespace DocRaptor.Client
         /// </summary>
         /// <param name="obj">Object.</param>
         /// <returns>JSON string.</returns>
-        public String Serialize(object obj)
+        public string Serialize(object obj)
         {
             try
             {
@@ -354,7 +329,7 @@ namespace DocRaptor.Client
         /// </summary>
         /// <param name="mime">MIME</param>
         /// <returns>Returns True if MIME type is json.</returns>
-        public bool IsJsonMime(String mime)
+        public bool IsJsonMime(string mime)
         {
             var jsonRegex = new Regex("(?i)^(application/json|[^;/ \t]+/[^;/ \t]+[+]json)[ \t]*(;.*)?$");
             return mime != null && (jsonRegex.IsMatch(mime) || mime.Equals("application/json-patch+json"));
@@ -367,7 +342,7 @@ namespace DocRaptor.Client
         /// </summary>
         /// <param name="contentTypes">The Content-Type array to select from.</param>
         /// <returns>The Content-Type header to use.</returns>
-        public String SelectHeaderContentType(String[] contentTypes)
+        public string SelectHeaderContentType(string[] contentTypes)
         {
             if (contentTypes.Length == 0)
                 return "application/json";
@@ -388,15 +363,19 @@ namespace DocRaptor.Client
         /// </summary>
         /// <param name="accepts">The accepts array to select from.</param>
         /// <returns>The Accept header to use.</returns>
-        public String SelectHeaderAccept(String[] accepts)
+        public string SelectHeaderAccept(string[] accepts)
         {
             if (accepts.Length == 0)
+            {
                 return null;
+            }
 
             if (accepts.Contains("application/json", StringComparer.OrdinalIgnoreCase))
+            {
                 return "application/json";
+            }
 
-            return String.Join(",", accepts);
+            return string.Join(",", accepts);
         }
 
         /// <summary>
@@ -404,10 +383,7 @@ namespace DocRaptor.Client
         /// </summary>
         /// <param name="text">String to be encoded.</param>
         /// <returns>Encoded string.</returns>
-        public static string Base64Encode(string text)
-        {
-            return System.Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(text));
-        }
+        public static string Base64Encode(string text) => Convert.ToBase64String(Encoding.UTF8.GetBytes(text));
 
         /// <summary>
         /// Dynamically cast the object into target type.
@@ -415,10 +391,7 @@ namespace DocRaptor.Client
         /// <param name="fromObject">Object to be casted</param>
         /// <param name="toObject">Target type</param>
         /// <returns>Casted object</returns>
-        public static dynamic ConvertType(dynamic fromObject, Type toObject)
-        {
-            return Convert.ChangeType(fromObject, toObject);
-        }
+        public static dynamic ConvertType(dynamic fromObject, Type toObject) => Convert.ChangeType(fromObject, toObject);
 
         /// <summary>
         /// Convert stream to byte array
@@ -451,7 +424,7 @@ namespace DocRaptor.Client
 
             if (input == null)
             {
-                throw new ArgumentNullException("input");
+                throw new ArgumentNullException(nameof(input));
             }
 
             if (input.Length <= maxLength)
@@ -487,19 +460,14 @@ namespace DocRaptor.Client
             {
                 return match.Groups[1].Value;
             }
-            else
-            {
-                return filename;
-            }
+
+            return filename;
         }
 
         /// <summary>
         /// Convert params to key/value pairs.
         /// Use collectionFormat to properly format lists and collections.
         /// </summary>
-        /// <param name="name">Key name.</param>
-        /// <param name="value">Value object.</param>
-        /// <returns>A list of KeyValuePairs</returns>
         public IEnumerable<KeyValuePair<string, string>> ParameterToKeyValuePairs(string collectionFormat, string name, object value)
         {
             var parameters = new List<KeyValuePair<string, string>>();
